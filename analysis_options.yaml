@@ -1,0 +1,16 @@
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  errors:
+    avoid_print: ignore
+    use_build_context_synchronously: ignore
+  exclude:
+    - test/**
+
+# Les règles non reconnues sont dans les fichiers inclus par flutter_lints.
+# Il n'y a rien à corriger ici, car tu n'utilises pas recommended.yaml ou core.yaml directement.
+# Les warnings sont inoffensifs et seront corrigés dans de futures versions des packages lints/flutter_lints.
+
+linter:
+  rules:
+    # tes règles personnalisées ici

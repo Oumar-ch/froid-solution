@@ -1,0 +1,5 @@
+[info] Don't use 'BuildContext's across async gaps (C:\Users\xxxx\3D Objects\froid_solution_service_technique\lib\screens\diagnostic_screen.dart:128:38)
+[info] Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check (C:\Users\xxxx\3D Objects\froid_solution_service_technique\lib\screens\diagnostic_screen.dart:218:35)
+[info] Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check (C:\Users\xxxx\3D Objects\froid_solution_service_technique\lib\screens\diagnostic_screen.dart:241:56)
+[info] Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check (C:\Users\xxxx\3D Objects\froid_solution_service_technique\lib\screens\diagnostic_screen.dart:250:56)
+[info] Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check (C:\Users\xxxx\3D Objects\froid_solution_service_technique\lib\screens\edit_client_screen.dart:211:26)
