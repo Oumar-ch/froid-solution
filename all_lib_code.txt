@@ -1,0 +1,1211 @@
+// =============================
+// Fichier : lib/utils/app_logger.dart
+// =============================
+import 'dart:developer' as developer;
+
+class AppLogger {
+  static final List<String> _logs = [];
+
+  static void log(String message) {
+    final timestamp = DateTime.now().toIso8601String();
+    final entry = '[$timestamp] $message';
+    _logs.add(entry);
+    developer.log(entry, name: 'AppLogger');
+  }
+
+  static List<String> getLogs() => List.unmodifiable(_logs);
+
+  static void clear() => _logs.clear();
+}
+
+// =============================
+// Fichier : lib/widgets/intervention_heatmap_calendar.dart
+// =============================
+// ignore_for_file: deprecated_member_use, unused_import
+
+import 'package:flutter/material.dart';
+import 'package:glassmorphism/glassmorphism.dart';
+import 'package:table_calendar/table_calendar.dart';
+import '../models/intervention.dart';
+
+class InterventionHeatmapCalendar extends StatelessWidget {
+  final List<Intervention> interventions;
+  const InterventionHeatmapCalendar(
+      {super.key, required List<Intervention>? interventions})
+      : interventions = interventions ?? const [];
+
+  Map<DateTime, int> _computeInterventionsByDay(
+      List<Intervention> interventions) {
+    final Map<DateTime, int> map = {};
+    for (final inter in interventions) {
+      final date = DateTime(inter.installationDate.year,
+          inter.installationDate.month, inter.installationDate.day);
+      map[date] = (map[date] ?? 0) + 1;
+    }
+    return map;
+  }
+
+  Color getColor(int value) {
+    if (value == 0) return Colors.transparent;
+    if (value < 3) return Colors.greenAccent.shade200;
+    if (value < 6) return Colors.yellowAccent.shade400;
+    if (value < 8) return Colors.deepOrangeAccent.shade200;
+    return Colors.redAccent.shade700;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 600;
+    final chartHeight = isMobile ? 260.0 : 340.0;
+    final interventionsByDay = _computeInterventionsByDay(interventions);
+    return GlassmorphicContainer(
+      width: double.infinity,
+      height: chartHeight + 60,
+      borderRadius: 24,
+      blur: 18,
+      border: 1.8,
+      linearGradient: LinearGradient(
+        colors: [
+          Colors.white.withOpacity(0.18),
+          Colors.white.withOpacity(0.07)
+        ],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ),
+      borderGradient: LinearGradient(
+        colors: [Colors.blueAccent.withOpacity(0.7), Colors.transparent],
+      ),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TableCalendar(
+              firstDay: DateTime.utc(2025, 7, 1),
+              lastDay: DateTime.utc(2025, 7, 31),
+              focusedDay: DateTime.utc(2025, 7, 1),
+              calendarBuilders: CalendarBuilders(
+                defaultBuilder: (context, day, focusedDay) {
+                  final interventionsCount = interventionsByDay[
+                          DateTime(day.year, day.month, day.day)] ??
+                      0;
+                  return GestureDetector(
+                    onTap: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                              'Interventions le \u001b[38;5;214m${day.day}/${day.month}/${day.year} : $interventionsCount'),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        color: getColor(interventionsCount),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                            color: Colors.blueAccent.withOpacity(0.3)),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '${day.day}',
+                        style: TextStyle(
+                          color: interventionsCount == 0
+                              ? Colors.blueGrey
+                              : Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+              calendarStyle: CalendarStyle(
+                outsideDaysVisible: false,
+                isTodayHighlighted: true,
+                todayDecoration: BoxDecoration(
+                  border: Border.all(color: Colors.blueAccent, width: 2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              headerStyle: HeaderStyle(
+                formatButtonVisible: false,
+                titleCentered: true,
+                titleTextStyle: TextStyle(
+                  color: Colors.blueAccent,
+                  fontWeight: FontWeight.bold,
+                  fontSize: isMobile ? 18 : 22,
+                ),
+                leftChevronIcon:
+                    Icon(Icons.chevron_left, color: Colors.blueAccent),
+                rightChevronIcon:
+                    Icon(Icons.chevron_right, color: Colors.blueAccent),
+              ),
+            ),
+            const SizedBox(height: 10),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: _HeatmapLegend(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HeatmapLegend extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _LegendBox(color: Colors.transparent, label: '0'),
+        _LegendBox(color: Colors.greenAccent.shade200, label: '1-2'),
+        _LegendBox(color: Colors.yellowAccent.shade400, label: '3-5'),
+        _LegendBox(color: Colors.deepOrangeAccent.shade200, label: '6-7'),
+        _LegendBox(color: Colors.redAccent.shade700, label: '8+'),
+        const SizedBox(width: 8),
+        const Text('= Nombre d\u2019interventions',
+            style: TextStyle(
+                fontSize: 13,
+                color: Colors.blueAccent,
+                fontWeight: FontWeight.bold)),
+      ],
+    );
+  }
+}
+
+class _LegendBox extends StatelessWidget {
+  final Color color;
+  final String label;
+  const _LegendBox({required this.color, required this.label});
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: 22,
+          height: 22,
+          margin: const EdgeInsets.symmetric(horizontal: 2),
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(6),
+            border: Border.all(color: Colors.blueAccent.withOpacity(0.4)),
+          ),
+        ),
+        const SizedBox(width: 2),
+        Text(label,
+            style: const TextStyle(fontSize: 12, color: Colors.blueAccent)),
+      ],
+    );
+  }
+}
+
+// =============================
+// Fichier : lib/widgets/planned_vs_completed_chart.dart
+// =============================
+// ignore_for_file: deprecated_member_use
+
+import 'package:flutter/material.dart' as widgets;
+import 'package:fl_chart/fl_chart.dart';
+import 'package:glassmorphism/glassmorphism.dart';
+import '../models/intervention.dart';
+
+class PlannedVsCompletedChart extends widgets.StatefulWidget {
+  final List<Intervention> interventions;
+  const PlannedVsCompletedChart(
+      {super.key, required List<Intervention>? interventions})
+      : interventions = interventions ?? const [];
+
+  @override
+  widgets.State<PlannedVsCompletedChart> createState() =>
+      _PlannedVsCompletedChartState();
+}
+
+class _PlannedVsCompletedChartState
+    extends widgets.State<PlannedVsCompletedChart>
+    with widgets.SingleTickerProviderStateMixin {
+  late final widgets.AnimationController _animationController;
+  late final widgets.Animation<double> _animation;
+  bool _isAnimating = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = widgets.AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+    _animation = widgets.CurvedAnimation(
+      parent: _animationController,
+      curve: widgets.Curves.easeInOut,
+    );
+    _animationController.forward();
+    _isAnimating = true;
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  widgets.Widget build(widgets.BuildContext context) {
+    // Extract data from interventions
+    final interventions = widget.interventions;
+    final clientNames = interventions.map((i) => i.clientName).toList();
+    // Placeholder: planned = 1 for each intervention (or replace with real logic if available)
+    final planned = List<int>.filled(interventions.length, 1);
+    final done = interventions.map((i) => i.completedDates.length).toList();
+    final maxY = [...planned, ...done]
+            .fold<int>(0, (prev, el) => el > prev ? el : prev)
+            .toDouble() +
+        2;
+    final isMobile = widgets.MediaQuery.of(context).size.width < 600;
+    final chartWidth = isMobile ? 320.0 : 420.0;
+    final chartHeight = isMobile ? 180.0 : 240.0;
+    final neonPlanned = widgets.Colors.cyanAccent.shade400;
+    final neonDone = widgets.Colors.greenAccent.shade400;
+    return GlassmorphicContainer(
+      width: chartWidth,
+      height: chartHeight + 60,
+      borderRadius: 24,
+      blur: 18,
+      border: 1.8,
+      linearGradient: widgets.LinearGradient(
+        colors: [
+          widgets.Colors.white.withOpacity(0.18),
+          widgets.Colors.white.withOpacity(0.07)
+        ],
+        begin: widgets.Alignment.topLeft,
+        end: widgets.Alignment.bottomRight,
+      ),
+      borderGradient: widgets.LinearGradient(
+        colors: [neonPlanned.withOpacity(0.7), widgets.Colors.transparent],
+      ),
+      child: widgets.SingleChildScrollView(
+        child: widgets.Column(
+          mainAxisAlignment: widgets.MainAxisAlignment.center,
+          children: [
+            widgets.SizedBox(
+              height: chartHeight,
+              width: chartWidth,
+              child: widgets.AnimatedBuilder(
+                animation: _animation,
+                builder: (context, child) {
+                  return BarChart(
+                    BarChartData(
+                      minY: 0,
+                      maxY: maxY,
+                      barGroups: List.generate(
+                        clientNames.length,
+                        (i) => BarChartGroupData(
+                          x: i,
+                          barRods: [
+                            BarChartRodData(
+                              toY: _isAnimating
+                                  ? (planned[i] * _animation.value)
+                                      .round()
+                                      .toDouble()
+                                  : planned[i].toDouble(),
+                              color: neonPlanned,
+                              width: 14,
+                              borderRadius: widgets.BorderRadius.circular(6),
+                            ),
+                            BarChartRodData(
+                              toY: _isAnimating
+                                  ? (done[i] * _animation.value)
+                                      .round()
+                                      .toDouble()
+                                  : done[i].toDouble(),
+                              color: neonDone,
+                              width: 14,
+                              borderRadius: widgets.BorderRadius.circular(6),
+                            ),
+                          ],
+                          showingTooltipIndicators: [0, 1],
+                        ),
+                      ),
+                      titlesData: FlTitlesData(
+                        leftTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            reservedSize: 28,
+                            getTitlesWidget: (value, meta) => widgets.Text(
+                              value.toInt().toString(),
+                              style: const widgets.TextStyle(
+                                  color: widgets.Colors.white70, fontSize: 12),
+                            ),
+                          ),
+                        ),
+                        bottomTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            getTitlesWidget: (value, meta) {
+                              final idx = value.toInt();
+                              if (idx < 0 || idx >= clientNames.length) {
+                                return const widgets.SizedBox.shrink();
+                              }
+                              return widgets.Text(
+                                clientNames[idx],
+                                style: const widgets.TextStyle(
+                                    color: widgets.Colors.white70,
+                                    fontSize: 12),
+                              );
+                            },
+                          ),
+                        ),
+                        rightTitles: AxisTitles(
+                            sideTitles: SideTitles(showTitles: false)),
+                        topTitles: AxisTitles(
+                            sideTitles: SideTitles(showTitles: false)),
+                      ),
+                      gridData: FlGridData(show: true),
+                      borderData: FlBorderData(show: false),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const widgets.SizedBox(height: 8),
+            widgets.Row(
+              mainAxisAlignment: widgets.MainAxisAlignment.center,
+              children: [
+                widgets.Container(
+                  width: 16,
+                  height: 16,
+                  decoration: widgets.BoxDecoration(
+                    color: neonPlanned,
+                    borderRadius: widgets.BorderRadius.circular(4),
+                  ),
+                ),
+                const widgets.SizedBox(width: 6),
+                const widgets.Text('Planifiées',
+                    style: widgets.TextStyle(color: widgets.Colors.white70)),
+                const widgets.SizedBox(width: 16),
+                widgets.Container(
+                  width: 16,
+                  height: 16,
+                  decoration: widgets.BoxDecoration(
+                    color: neonDone,
+                    borderRadius: widgets.BorderRadius.circular(4),
+                  ),
+                ),
+                const widgets.SizedBox(width: 6),
+                const widgets.Text('Réalisées',
+                    style: widgets.TextStyle(color: widgets.Colors.white70)),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// =============================
+// Fichier : lib/widgets/intervention_type_chart.dart
+// =============================
+// ignore_for_file: deprecated_member_use
+
+import 'package:flutter/material.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'package:glassmorphism/glassmorphism.dart';
+import '../models/intervention.dart';
+
+class InterventionTypeChart extends StatelessWidget {
+  final List<Intervention> interventions;
+  const InterventionTypeChart(
+      {super.key, required List<Intervention>? interventions})
+      : interventions = interventions ?? const [];
+
+  @override
+  Widget build(BuildContext context) {
+    // Extract data from interventions
+    final clientNames = interventions.map((i) => i.clientName).toList();
+    final interventionTypes = interventions
+        .expand((i) => i.completedDates)
+        .map((date) => date.toIso8601String().split('T')[0])
+        .toSet()
+        .toList();
+    final dataMap = <String, double>{};
+    for (var type in interventionTypes) {
+      dataMap[type] = interventions
+          .where((i) => i.completedDates
+              .any((date) => date.toIso8601String().split('T')[0] == type))
+          .length
+          .toDouble();
+    }
+    final isMobile = MediaQuery.of(context).size.width < 600;
+    final chartWidth = isMobile ? 320.0 : 420.0;
+    final chartHeight = isMobile ? 180.0 : 240.0;
+    return GlassmorphicContainer(
+      width: chartWidth,
+      height: chartHeight + 60,
+      borderRadius: 24,
+      blur: 18,
+      border: 1.8,
+      linearGradient: LinearGradient(
+        colors: [
+          Colors.white.withOpacity(0.18),
+          Colors.white.withOpacity(0.07)
+        ],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ),
+      borderGradient: LinearGradient(
+        colors: [Colors.blueAccent.withOpacity(0.7), Colors.transparent],
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              height: chartHeight,
+              width: chartWidth,
+              child: PieChart(
+                PieChartData(
+                  pieTouchData: PieTouchData(
+                    touchCallback: (event, response) {
+                      if (event is! PointerExitEvent &&
+                          event is! PointerUpEvent) {
+                        final index = response?.touchedSection?.touchedSectionIndex;
+                        final value = index != null
+                            ? dataMap.entries.elementAt(index).value
+                            : null;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                                'Interventions: ${value?.toStringAsFixed(0)}'),
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                  borderData: FlBorderData(show: false),
+                  sections: dataMap.entries
+                      .map(
+                        (entry) => PieChartSectionData(
+                          color: Colors.primaries[
+                              dataMap.keys.toList().indexOf(entry.key) %
+                                  Colors.primaries.length],
+                          value: entry.value,
+                          title: entry.key,
+                          radius: 60,
+                          titleStyle: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// =============================
+// Fichier : lib/widgets/urgent_intervention_alert_box.dart
+// =============================
+
+import 'package:flutter/material.dart';
+
+class UrgentInterventionAlertBox extends StatelessWidget {
+  final String clientName;
+  final String interventionType;
+  final DateTime interventionDate;
+  final bool isOpen;
+  final VoidCallback onToggle;
+  const UrgentInterventionAlertBox({
+    super.key,
+    required this.clientName,
+    required this.interventionType,
+    required this.interventionDate,
+    required this.isOpen,
+    required this.onToggle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final dateFormatted =
+        '${interventionDate.day}/${interventionDate.month}/${interventionDate.year}';
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      decoration: BoxDecoration(
+        color: Colors.redAccent.shade100,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.redAccent, width: 2),
+      ),
+      child: Column(
+        children: [
+          ListTile(
+            contentPadding: const EdgeInsets.all(16),
+            title: Text(
+              'Intervention urgente',
+              style: TextStyle(
+                color: Colors.redAccent.shade700,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Client : $clientName',
+                  style: TextStyle(color: Colors.blueGrey.shade800),
+                ),
+                Text(
+                  'Type : $interventionType',
+                  style: TextStyle(color: Colors.blueGrey.shade800),
+                ),
+                Text(
+                  'Date : $dateFormatted',
+                  style: TextStyle(color: Colors.blueGrey.shade800),
+                ),
+              ],
+            ),
+            trailing: IconButton(
+              icon: Icon(
+                isOpen ? Icons.expand_less : Icons.expand_more,
+                color: Colors.redAccent.shade700,
+              ),
+              onPressed: onToggle,
+            ),
+          ),
+          if (isOpen) ...{
+            Divider(
+              thickness: 1.2,
+              color: Colors.redAccent.shade400,
+            ),
+            Container(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Détails de l\'intervention',
+                    style: TextStyle(
+                      color: Colors.redAccent.shade700,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'Description : Intervention planifiée pour le client $clientName concernant le type $interventionType.',
+                    style: TextStyle(color: Colors.blueGrey.shade800),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'Statut : En attente',
+                    style: TextStyle(
+                      color: Colors.orangeAccent.shade700,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          },
+        ],
+      ),
+    );
+  }
+}
+
+// =============================
+// Fichier : lib/widgets/upcoming_intervention_calendar_widget.dart
+// =============================
+// ignore_for_file: deprecated_member_use, unused_import
+
+import 'package:flutter/material.dart';
+import 'package:glassmorphism/glassmorphism.dart';
+import 'package:table_calendar/table_calendar.dart';
+import '../models/intervention.dart';
+
+class UpcomingInterventionCalendarWidget extends StatelessWidget {
+  final List<Intervention> interventions;
+  const UpcomingInterventionCalendarWidget(
+      {super.key, required List<Intervention>? interventions})
+      : interventions = interventions ?? const [];
+
+  Map<DateTime, List<Intervention>> _groupInterventionsByDay(
+      List<Intervention> interventions) {
+    final Map<DateTime, List<Intervention>> map = {};
+    for (final inter in interventions) {
+      final date = DateTime(inter.installationDate.year,
+          inter.installationDate.month, inter.installationDate.day);
+      if (map[date] == null) {
+        map[date] = [];
+      }
+      map[date]!.add(inter);
+    }
+    return map;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 600;
+    final chartHeight = isMobile ? 260.0 : 340.0;
+    final interventionsByDay = _groupInterventionsByDay(interventions);
+    return GlassmorphicContainer(
+      width: double.infinity,
+      height: chartHeight + 60,
+      borderRadius: 24,
+      blur: 18,
+      border: 1.8,
+      linearGradient: LinearGradient(
+        colors: [
+          Colors.white.withOpacity(0.18),
+          Colors.white.withOpacity(0.07)
+        ],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ),
+      borderGradient: LinearGradient(
+        colors: [Colors.blueAccent.withOpacity(0.7), Colors.transparent],
+      ),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TableCalendar(
+              firstDay: DateTime.utc(2025, 7, 1),
+              lastDay: DateTime.utc(2025, 7, 31),
+              focusedDay: DateTime.utc(2025, 7, 1),
+              calendarBuilders: CalendarBuilders(
+                defaultBuilder: (context, day, focusedDay) {
+                  final interventions = interventionsByDay[
+                          DateTime(day.year, day.month, day.day)] ??
+                      [];
+                  return GestureDetector(
+                    onTap: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                              'Interventions le \u001b[38;5;214m${day.day}/${day.month}/${day.year} : ${interventions.length}'),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        color: interventions.isEmpty
+                            ? Colors.transparent
+                            : Colors.blueAccent.shade100,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                            color: Colors.blueAccent.withOpacity(0.3)),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '${day.day}',
+                        style: TextStyle(
+                          color: interventions.isEmpty
+                              ? Colors.blueGrey
+                              : Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+              calendarStyle: CalendarStyle(
+                outsideDaysVisible: false,
+                isTodayHighlighted: true,
+                todayDecoration: BoxDecoration(
+                  border: Border.all(color: Colors.blueAccent, width: 2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              headerStyle: HeaderStyle(
+                formatButtonVisible: false,
+                titleCentered: true,
+                titleTextStyle: TextStyle(
+                  color: Colors.blueAccent,
+                  fontWeight: FontWeight.bold,
+                  fontSize: isMobile ? 18 : 22,
+                ),
+                leftChevronIcon:
+                    Icon(Icons.chevron_left, color: Colors.blueAccent),
+                rightChevronIcon:
+                    Icon(Icons.chevron_right, color: Colors.blueAccent),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'Interventions à venir',
+              style: TextStyle(
+                color: Colors.blueAccent,
+                fontWeight: FontWeight.bold,
+                fontSize: isMobile ? 16 : 20,
+              ),
+            ),
+            const SizedBox(height: 8),
+            ...interventionsByDay.entries
+                .where((entry) => entry.key.isAfter(DateTime.now()))
+                .map(
+                  (entry) => Container(
+                    margin: const EdgeInsets.symmetric(vertical: 4),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.blueAccent.shade50,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                          color: Colors.blueAccent.withOpacity(0.3)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${entry.key.day}/${entry.key.month}/${entry.key.year}',
+                          style: TextStyle(
+                            color: Colors.blueAccent,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        ...entry.value.map(
+                          (inter) => Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            child: Text(
+                              '• ${inter.clientName} (${inter.completedDates.length})',
+                              style: TextStyle(
+                                color: Colors.blueGrey.shade800,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+                .toList(),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// =============================
+// Fichier : lib/widgets/technicien_glass_card.dart
+// =============================
+// ignore_for_file: deprecated_member_use
+
+import 'package:flutter/material.dart';
+import 'package:glassmorphism/glassmorphism.dart';
+import '../models/intervention.dart';
+
+class TechnicienGlassCard extends StatelessWidget {
+  final String technicienName;
+  final String technicienRole;
+  final List<Intervention> interventions;
+  const TechnicienGlassCard({
+    super.key,
+    required this.technicienName,
+    required this.technicienRole,
+    required List<Intervention>? interventions,
+  }) : interventions = interventions ?? const [];
+
+  @override
+  Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 600;
+    final cardHeight = isMobile ? 180.0 : 240.0;
+    return GlassmorphicContainer(
+      width: double.infinity,
+      height: cardHeight,
+      borderRadius: 24,
+      blur: 18,
+      border: 1.8,
+      linearGradient: LinearGradient(
+        colors: [
+          Colors.white.withOpacity(0.18),
+          Colors.white.withOpacity(0.07)
+        ],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ),
+      borderGradient: LinearGradient(
+        colors: [Colors.blueAccent.withOpacity(0.7), Colors.transparent],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              technicienName,
+              style: TextStyle(
+                color: Colors.blueAccent,
+                fontWeight: FontWeight.bold,
+                fontSize: isMobile ? 18 : 22,
+              ),
+            ),
+            Text(
+              technicienRole,
+              style: TextStyle(
+                color: Colors.blueGrey.shade600,
+                fontSize: isMobile ? 14 : 16,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _StatCard(
+                  label: 'Interventions',
+                  value: interventions.length,
+                  isMobile: isMobile,
+                ),
+                _StatCard(
+                  label: 'À faire',
+                  value: interventions
+                      .where((inter) => inter.completedDates.isEmpty)
+                      .length,
+                  isMobile: isMobile,
+                ),
+                _StatCard(
+                  label: 'Terminées',
+                  value: interventions
+                      .where((inter) => inter.completedDates.isNotEmpty)
+                      .length,
+                  isMobile: isMobile,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _StatCard extends StatelessWidget {
+  final String label;
+  final int value;
+  final bool isMobile;
+  const _StatCard({
+    required this.label,
+    required this.value,
+    required this.isMobile,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          '$value',
+          style: TextStyle(
+            color: Colors.blueAccent,
+            fontWeight: FontWeight.bold,
+            fontSize: isMobile ? 20 : 24,
+          ),
+        ),
+        Text(
+          label,
+          style: TextStyle(
+            color: Colors.blueGrey.shade600,
+            fontSize: isMobile ? 12 : 14,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// =============================
+// Fichier : lib/widgets/stat_icon_card_neon.dart
+// =============================
+// ignore_for_file: deprecated_member_use
+
+import 'package:flutter/material.dart';
+import 'package:glassmorphism/glassmorphism.dart';
+
+class StatIconCardNeon extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final int value;
+  const StatIconCardNeon({
+    super.key,
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GlassmorphicContainer(
+      width: 120,
+      height: 120,
+      borderRadius: 16,
+      blur: 18,
+      border: 1.8,
+      linearGradient: LinearGradient(
+        colors: [
+          Colors.white.withOpacity(0.18),
+          Colors.white.withOpacity(0.07)
+        ],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ),
+      borderGradient: LinearGradient(
+        colors: [Colors.blueAccent.withOpacity(0.7), Colors.transparent],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            icon,
+            size: 40,
+            color: Colors.blueAccent,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            '$value',
+            style: TextStyle(
+              color: Colors.blueAccent,
+              fontWeight: FontWeight.bold,
+              fontSize: 24,
+            ),
+          ),
+          Text(
+            label,
+            style: TextStyle(
+              color: Colors.blueGrey.shade600,
+              fontSize: 14,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// =============================
+// Fichier : lib/widgets/programme_planning_card.dart
+// =============================
+// (Ce fichier est vide)
+
+// =============================
+// Fichier : lib/widgets/programme_card.dart
+// =============================
+// ignore_for_file: deprecated_member_use
+
+import 'package:flutter/material.dart';
+import 'package:glassmorphism/glassmorphism.dart';
+import '../models/intervention.dart';
+
+class ProgrammeCard extends StatelessWidget {
+  final String programmeName;
+  final List<Intervention> interventions;
+  const ProgrammeCard({
+    super.key,
+    required this.programmeName,
+    required List<Intervention>? interventions,
+  }) : interventions = interventions ?? const [];
+
+  @override
+  Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 600;
+    final cardHeight = isMobile ? 180.0 : 240.0;
+    return GlassmorphicContainer(
+      width: double.infinity,
+      height: cardHeight,
+      borderRadius: 24,
+      blur: 18,
+      border: 1.8,
+      linearGradient: LinearGradient(
+        colors: [
+          Colors.white.withOpacity(0.18),
+          Colors.white.withOpacity(0.07)
+        ],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ),
+      borderGradient: LinearGradient(
+        colors: [Colors.blueAccent.withOpacity(0.7), Colors.transparent],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              programmeName,
+              style: TextStyle(
+                color: Colors.blueAccent,
+                fontWeight: FontWeight.bold,
+                fontSize: isMobile ? 18 : 22,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _StatCard(
+                  label: 'Interventions',
+                  value: interventions.length,
+                  isMobile: isMobile,
+                ),
+                _StatCard(
+                  label: 'À faire',
+                  value: interventions
+                      .where((inter) => inter.completedDates.isEmpty)
+                      .length,
+                  isMobile: isMobile,
+                ),
+                _StatCard(
+                  label: 'Terminées',
+                  value: interventions
+                      .where((inter) => inter.completedDates.isNotEmpty)
+                      .length,
+                  isMobile: isMobile,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// =============================
+// Fichier : lib/themes/light_theme.dart
+// =============================
+// ignore_for_file: deprecated_member_use
+
+import 'package:flutter/material.dart';
+
+ThemeData lightTheme = ThemeData(
+  brightness: Brightness.light,
+  primaryColor: Colors.blueAccent,
+  accentColor: Colors.amberAccent,
+  backgroundColor: Colors.white,
+  scaffoldBackgroundColor: Colors.grey.shade100,
+  cardColor: Colors.white,
+  dividerColor: Colors.blueGrey.shade200,
+  textTheme: TextTheme(
+    bodyText1: TextStyle(color: Colors.black87),
+    bodyText2: TextStyle(color: Colors.black54),
+    headline1: TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold),
+    headline2: TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold),
+    headline3: TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold),
+  ),
+  appBarTheme: AppBarTheme(
+    color: Colors.white,
+    iconTheme: IconThemeData(color: Colors.blueAccent),
+    textTheme: TextTheme(
+      headline6: TextStyle(color: Colors.blueAccent, fontSize: 20, fontWeight: FontWeight.bold),
+    ),
+  ),
+  buttonTheme: ButtonThemeData(
+    buttonColor: Colors.blueAccent,
+    textTheme: ButtonTextTheme.primary,
+  ),
+  inputDecorationTheme: InputDecorationTheme(
+    filled: true,
+    fillColor: Colors.grey.shade200,
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide.none,
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(color: Colors.blueAccent, width: 2),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(color: Colors.blueGrey.shade300, width: 1),
+    ),
+  ),
+);
+
+// =============================
+// Fichier : lib/themes/dark_theme.dart
+// =============================
+// ignore_for_file: deprecated_member_use
+
+import 'package:flutter/material.dart';
+
+ThemeData darkTheme = ThemeData(
+  brightness: Brightness.dark,
+  primaryColor: Colors.blueAccent,
+  accentColor: Colors.amberAccent,
+  backgroundColor: Colors.black,
+  scaffoldBackgroundColor: Colors.grey.shade900,
+  cardColor: Colors.grey.shade800,
+  dividerColor: Colors.blueGrey.shade700,
+  textTheme: TextTheme(
+    bodyText1: TextStyle(color: Colors.white70),
+    bodyText2: TextStyle(color: Colors.white54),
+    headline1: TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold),
+    headline2: TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold),
+    headline3: TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold),
+  ),
+  appBarTheme: AppBarTheme(
+    color: Colors.grey.shade800,
+    iconTheme: IconThemeData(color: Colors.blueAccent),
+    textTheme: TextTheme(
+      headline6: TextStyle(color: Colors.blueAccent, fontSize: 20, fontWeight: FontWeight.bold),
+    ),
+  ),
+  buttonTheme: ButtonThemeData(
+    buttonColor: Colors.blueAccent,
+    textTheme: ButtonTextTheme.primary,
+  ),
+  inputDecorationTheme: InputDecorationTheme(
+    filled: true,
+    fillColor: Colors.grey.shade700,
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide.none,
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(color: Colors.blueAccent, width: 2),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(color: Colors.blueGrey.shade600, width: 1),
+    ),
+  ),
+);
+
+// =============================
+// Fichier : lib/themes/app_colors.dart
+// =============================
+// ignore_for_file: deprecated_member_use
+
+import 'package:flutter/material.dart';
+
+class AppColors {
+  static const Color primary = Color(0xFF6200EE);
+  static const Color primaryVariant = Color(0xFF3700B3);
+  static const Color secondary = Color(0xFF03DAC6);
+  static const Color secondaryVariant = Color(0xFF018786);
+  static const Color background = Color(0xFFFFFFFF);
+  static const Color surface = Color(0xFFEEEEEE);
+  static const Color error = Color(0xFFB00020);
+  static const Color onPrimary = Color(0xFFFFFFFF);
+  static const Color onSecondary = Color(0xFF000000);
+  static const Color onBackground = Color(0xFF000000);
+  static const Color onSurface = Color(0xFF000000);
+  static const Color onError = Color(0xFFFFFFFF);
+}
+

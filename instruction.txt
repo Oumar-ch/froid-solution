@@ -1,0 +1,536 @@
+🔷 2. PROMPT : Évolution des interventions par semaine/mois (Line Chart)
+🎯 Objectif :
+Afficher un graphique en courbes qui montre le nombre d'interventions réalisées par semaine ou par mois, avec un style moderne, fluide et responsive.
+
+✅ Prompt à coller dans ton fichier .dart ou dans Copilot Chat :
+dart
+Copier
+Modifier
+// 📊 Objectif : Générer un widget Flutter qui affiche un graphique en courbes (Line Chart)
+//              représentant l'évolution des interventions techniques dans le temps (par semaine ou par mois).
+// 🖌️ Style visuel : Thème glassmorphique, couleurs néon, responsive, animations douces.
+// 📦 Packages : fl_chart pour le graphique, glass_kit pour l'effet visuel du conteneur.
+// 🧠 Données simulées :
+//   - Semaine 1 : 5 interventions
+//   - Semaine 2 : 9 interventions
+//   - Semaine 3 : 6 interventions
+//   - Semaine 4 : 12 interventions
+//   - Semaine 5 : 7 interventions
+
+/// Génère un widget nommé `InterventionEvolutionChart` :
+/// - Utilise un container avec effet glassmorphique (glass_kit)
+/// - Intègre un `LineChart` de `fl_chart`
+/// - X : Semaines (1 à 5), Y : Nombre d’interventions
+/// - La ligne doit être fluide, animée, avec points visibles
+/// - Ajoute un effet de surbrillance néon sur la courbe
+/// - En dessous, ajoute une mini-légende "Évolution des interventions sur 5 semaines"
+/// - Doit s’adapter à mobile/tablette/desktop
+/// - Code structuré, clair, prêt à être intégré à un dashboard Flutter
+
+// Extrait attendu :
+/// class InterventionEvolutionChart extends StatelessWidget {
+///   @override
+///   Widget build(BuildContext context) {
+///     return GlassContainer(
+///       child: Column(
+///         children: [
+///           LineChart(...),
+///           SizedBox(height: 10),
+///           Text("Évolution des interventions sur 5 semaines", ...)
+///         ],
+///       )
+///     );
+///   }
+/// }
+Souhaites-tu maintenant que je te génère le prompt suivant (graphique n°3 : comparatif interventions planifiées vs réalisées en bar chart) ?
+
+
+
+
+
+
+
+
+Vous avez dit :
+ok suivant
+
+
+ChatGPT a dit :
+Super, passons maintenant au 3ᵉ prompt :
+
+📊 Comparatif interventions programmées vs réalisées (Bar Chart vertical)
+🔷 3. PROMPT : Interventions planifiées vs réalisées (Barres comparatives)
+🎯 Objectif :
+Afficher un graphique à barres verticales comparant pour chaque semaine le nombre d'interventions programmées vs celles réellement réalisées, avec des couleurs distinctes, dans un style glassmorphique responsive.
+
+✅ Prompt Copilot ultra-précis à utiliser :
+dart
+Copier
+Modifier
+// 📊 Objectif : Générer un widget Flutter qui affiche un BarChart vertical
+//              comparant le nombre d'interventions planifiées vs réalisées par semaine.
+// 🖌️ Design : Thème glassmorphique, bordures néon, couleurs contrastées (ex : bleu planifiée, vert réalisée)
+// 📦 Packages : fl_chart pour le graphique, glass_kit pour le fond.
+// 🧠 Données simulées (en dur pour test) :
+//   - Semaine 1 : Planifiées 8 | Réalisées 6
+//   - Semaine 2 : Planifiées 10 | Réalisées 9
+//   - Semaine 3 : Planifiées 12 | Réalisées 10
+//   - Semaine 4 : Planifiées 7 | Réalisées 6
+//   - Semaine 5 : Planifiées 9 | Réalisées 9
+
+/// Génère un widget nommé `PlannedVsCompletedChart` :
+/// - Utilise un conteneur avec effet glass (glass_kit)
+/// - Intègre un `BarChart` de `fl_chart`
+/// - Chaque semaine a deux barres côte à côte : une pour planifiée, une pour réalisée
+/// - Les barres doivent être animées à l’apparition, avec des couleurs néon personnalisées
+/// - En dessous, ajouter une légende ou des pastilles couleur pour distinguer planifiée/réalisée
+/// - Responsive : taille adaptable à mobile / tablette / desktop
+/// - Le code doit être propre, réutilisable, et intégrable dans un dashboard
+
+// Exemple de structure :
+/// class PlannedVsCompletedChart extends StatelessWidget {
+///   @override
+///   Widget build(BuildContext context) {
+///     return GlassContainer(
+///       child: Column(
+///         children: [
+///           BarChart(...),
+///           SizedBox(height: 10),
+///           Row( // légende)
+///         ],
+///       )
+///     );
+///   }
+/// }
+📌 Ce widget est parfait pour détecter les écarts entre planification et réalité, très utile dans une logique de suivi qualité.
+
+Souhaite-tu que je t’enchaîne avec le 4ᵉ prompt :
+Top Techniciens (barres horizontales) ?
+
+
+
+
+
+
+
+
+Vous avez dit :
+ok
+
+
+ChatGPT a dit :
+Parfait, voici maintenant le 4ᵉ prompt pour GitHub Copilot :
+
+🧑‍🔧 Top techniciens (Barres horizontales)
+🔷 4. PROMPT : Classement des techniciens (Bar Chart horizontal)
+🎯 Objectif :
+Afficher un graphique à barres horizontales classant les techniciens selon le nombre d’interventions réalisées, avec un style professionnel, animé et responsive.
+
+✅ Prompt clair et complet à coller dans Copilot Chat ou ton fichier .dart :
+dart
+Copier
+Modifier
+// 📊 Objectif : Générer un widget Flutter affichant un graphique à barres horizontales
+//              représentant le classement des techniciens selon le nombre d’interventions réalisées.
+// 🖌️ Style : Thème glassmorphique avec effet néon, couleurs personnalisées par technicien.
+// 📦 Packages : fl_chart (BarChart horizontal), glass_kit (effet visuel)
+// 🧠 Données simulées :
+//   - Jean : 15 interventions
+//   - Awa : 12 interventions
+//   - Mamadou : 10 interventions
+//   - Salif : 8 interventions
+//   - Issa : 6 interventions
+
+/// Génère un widget nommé `TopTechniciansChart` :
+/// - Utilise un container avec effet glassmorphique (glass_kit)
+/// - Utilise un `BarChart` de `fl_chart` en mode horizontal (HorizontalBarChart)
+/// - Chaque technicien a une barre de longueur proportionnelle à ses interventions
+/// - Ajouter un petit avatar ou icône devant chaque nom dans la légende
+/// - Animation à l’apparition des barres (ex. glisser de gauche à droite)
+/// - En dessous : texte "Classement des techniciens par nombre d’interventions"
+/// - Code optimisé pour dashboard responsive mobile / tablette / desktop
+
+// Structure attendue :
+/// class TopTechniciansChart extends StatelessWidget {
+///   @override
+///   Widget build(BuildContext context) {
+///     return GlassContainer(
+///       child: Column(
+///         children: [
+///           BarChart(...),
+///           SizedBox(height: 10),
+///           Text("Classement des techniciens par interventions")
+///         ],
+///       )
+///     );
+///   }
+/// }
+🔧 Ce widget t’aide à motiver ton équipe en mettant en avant les plus performants, ou identifier qui a besoin d’aide ou de renfort.
+
+Souhaite-tu que je continue avec le 5ᵉ prompt :
+📅 Heatmap calendrier des maintenances/interventions ?
+
+
+
+
+
+
+
+
+Vous avez dit :
+ok
+
+
+ChatGPT a dit :
+Génial, on passe maintenant au 5ᵉ prompt :
+
+📅 Heatmap calendrier des maintenances/interventions
+🔷 5. PROMPT : Carte de chaleur (Heatmap) des interventions par jour
+🎯 Objectif :
+Créer une Heatmap (calendrier coloré) pour visualiser la densité d’interventions réalisées par jour, afin de repérer les jours les plus chargés ou inactifs.
+
+✅ Prompt Copilot détaillé à coller dans VS Code ou Copilot Chat :
+dart
+Copier
+Modifier
+// 📅 Objectif : Générer un widget Flutter affichant une carte de chaleur (Heatmap)
+//              représentant le nombre d’interventions par jour sur un mois ou une période donnée.
+// 🖌️ Style : Design moderne, effet glassmorphique, couleurs néon (plus il y a d’interventions, plus la couleur est chaude).
+// 📦 Packages : Utiliser `table_calendar` pour la structure ou `heatmap_calendar` / `calendar_heatmap` pour le style heatmap,
+//               `glass_kit` pour l’effet visuel.
+// 🧠 Données simulées :
+//   - Format : Map<DateTime, int> où la valeur = nombre d’interventions ce jour-là.
+//   - Exemple :
+//     - 2025-07-01 : 2
+//     - 2025-07-03 : 5
+//     - 2025-07-10 : 7
+//     - 2025-07-15 : 0
+//     - 2025-07-19 : 9
+
+/// Génère un widget Flutter nommé `InterventionHeatmapCalendar` :
+/// - Utilise un conteneur glassmorphique (glass_kit)
+/// - À l’intérieur, affiche un calendrier avec des carrés/jours colorés selon l’intensité d’interventions
+/// - Plus la valeur est élevée, plus la couleur est vive (ex. vert → jaune → orange → rouge)
+/// - Doit permettre de cliquer sur une date pour afficher les détails en pop-up (snackbar ou dialog)
+/// - En dessous du calendrier, afficher une légende couleur (0 = transparent, 10+ = rouge vif)
+/// - Code responsive pour mobile/tablette/desktop, propre, modulaire
+
+// Exemple attendu :
+/// class InterventionHeatmapCalendar extends StatelessWidget {
+///   @override
+///   Widget build(BuildContext context) {
+///     return GlassContainer(
+///       child: Column(
+///         children: [
+///           CalendarHeatmap(...),
+///           SizedBox(height: 10),
+///           Legend(...)
+///         ],
+///       ),
+///     );
+///   }
+/// }
+📌 Ce composant permet à ton équipe de visualiser facilement la charge d’activité par jour, et d’identifier les pics pour mieux planifier.
+
+Souhaites-tu qu’on passe maintenant au 6ᵉ prompt :
+🛠️ Répartition des types d’intervention (ex : maintenance, dépannage, installation) ?
+
+
+
+
+
+
+
+
+Vous avez dit :
+ok
+
+
+ChatGPT a dit :
+Parfait, voici le 6ᵉ prompt pour GitHub Copilot :
+
+🛠️ Répartition des types d’intervention (Barres ou Camembert)
+🔷 6. PROMPT : Graphique des types d'interventions effectuées
+🎯 Objectif :
+Créer un graphique qui montre la répartition des interventions selon leur type (ex. maintenance préventive, dépannage, installation, etc.). Ce widget t’aide à voir quel type d’intervention est le plus fréquent.
+
+✅ Prompt Copilot précis et complet :
+dart
+Copier
+Modifier
+// 🛠️ Objectif : Générer un widget Flutter qui affiche la répartition des interventions techniques
+//               par type (maintenance, dépannage, installation, etc.).
+// 📊 Graphique attendu : soit un PieChart (camembert) ou un BarChart vertical.
+// 🎨 Style : glassmorphisme, couleurs néon distinctes pour chaque type, animation à l'apparition.
+// 📦 Packages : fl_chart (PieChart ou BarChart), glass_kit (effet visuel)
+// 🧠 Données simulées :
+//   - Maintenance préventive : 40%
+//   - Dépannage : 35%
+//   - Installation : 15%
+//   - Autres : 10%
+
+/// Génère un widget nommé `InterventionTypeChart` :
+/// - Utilise un `GlassContainer` (via glass_kit)
+/// - Affiche un PieChart (ou BarChart si plus adapté au style)
+//      avec les types d’interventions et leur pourcentage
+/// - Chaque segment/barre doit être coloré différemment et animé
+/// - En dessous, afficher une légende avec icône, couleur et nom du type
+/// - Responsive : Doit bien s’afficher sur mobile, tablette, desktop
+/// - Le code doit être clair, modulaire, facilement extensible
+
+// Extrait attendu :
+/// class InterventionTypeChart extends StatelessWidget {
+///   @override
+///   Widget build(BuildContext context) {
+///     return GlassContainer(
+///       child: Column(
+///         children: [
+///           PieChart(...), // ou BarChart(...)
+///           SizedBox(height: 10),
+///           Legend(...) // avec couleurs et noms
+///         ],
+///       ),
+///     );
+///   }
+/// }
+📌 Ce graphique t’aidera à analyser ton activité globale pour comprendre quel service est le plus sollicité.
+
+Souhaites-tu que je continue avec le 7ᵉ prompt :
+🛎️ Widget alertes urgentes / interventions critiques en retard ?
+
+
+
+
+
+
+
+
+Vous avez dit :
+ok
+
+
+ChatGPT a dit :
+Parfait, voici le 7ᵉ prompt pour GitHub Copilot :
+
+🛎️ 7. PROMPT : Widget alertes interventions urgentes ou en retard
+🎯 Objectif :
+Créer un widget affichant une liste ou boîte d’alerte des interventions critiques : celles en retard ou marquées comme urgentes. L’utilisateur doit pouvoir visualiser ces interventions immédiatement à l’ouverture du dashboard.
+
+✅ Prompt Copilot précis et complet :
+dart
+Copier
+Modifier
+// 🛎️ Objectif : Créer un widget Flutter qui affiche la liste des interventions urgentes ou en retard.
+//               Ce widget doit capter immédiatement l’attention (effet visuel, icône d’alerte...)
+// 🔴 Cas concernés :
+//   - Interventions dont la date est dépassée ET statut ≠ 'terminée'
+//   - Interventions marquées comme 'urgente'
+// 🎨 Style visuel : fond semi-transparent (glassmorphism), couleur dominante rouge/orange fluo pour indiquer la criticité, clignotement léger ou glow sur les cartes.
+// 📦 Packages : flutter_animate (animation glow/clignotement), glass_kit, intl (pour les dates)
+
+/// Le widget s'appelle `UrgentInterventionAlertBox`.
+/// - Affiche un titre en haut : "⚠️ Interventions Critiques"
+/// - Pour chaque intervention :
+///   - Card glassmorphique avec nom du client, type, date prévue, statut
+///   - Couleur rouge/orange si urgente ou en retard
+///   - Petite icône d’horloge si en retard, icône flamme si urgente
+/// - S’affiche de façon responsive sur mobile/desktop
+/// - Affiche un bouton “Voir tout” pour rediriger vers la page détaillée
+
+// Extrait attendu :
+/// class UrgentInterventionAlertBox extends StatelessWidget {
+///   final List<Intervention> urgentList; // données à injecter
+///
+///   @override
+///   Widget build(BuildContext context) {
+///     return GlassContainer(
+///       padding: EdgeInsets.all(16),
+///       child: Column(
+///         crossAxisAlignment: CrossAxisAlignment.start,
+///         children: [
+///           Text('⚠️ Interventions Critiques', style: ...),
+///           SizedBox(height: 10),
+///           ...urgentList.map((intervention) => GlowCard(intervention)),
+///           Align(
+///             alignment: Alignment.centerRight,
+///             child: TextButton(
+///               onPressed: () {
+///                 Navigator.pushNamed(context, '/interventions');
+///               },
+///               child: Text('Voir tout'),
+///             ),
+///           ),
+///         ],
+///       ),
+///     );
+///   }
+/// }
+Souhaites-tu que je te génère maintenant le 8ᵉ prompt :
+📅 Widget Calendrier ou Timeline d’interventions à venir ?
+
+
+
+
+
+
+
+
+Vous avez dit :
+ok
+
+
+ChatGPT a dit :
+Voici le 8ᵉ prompt pour GitHub Copilot :
+
+📅 8. PROMPT : Widget Calendrier ou Timeline d’interventions à venir
+🎯 Objectif :
+Créer un widget calendrier interactif ou timeline verticale qui affiche les interventions prévues, classées par jour/semaine. Ce widget aide à visualiser rapidement la charge de travail technique à venir.
+
+✅ Prompt Copilot clair et complet :
+dart
+Copier
+Modifier
+// 📅 Objectif : Créer un widget calendrier ou timeline qui affiche les interventions programmées dans les jours/semaines à venir.
+// 🔄 Données : Liste des interventions (date, client, type, statut)
+// 🎨 Style : card glassmorphique par jour, avec effet neon doux sur les dates contenant des tâches. Doit rester sobre et lisible.
+// 📦 Packages recommandés : table_calendar, syncfusion_flutter_calendar, flutter_neumorphic (optionnel), intl
+
+/// Le widget s'appelle `UpcomingInterventionCalendarWidget`
+/// - Affiche une timeline verticale avec les dates futures contenant des interventions
+/// - Chaque date affiche :
+///     - La date en titre
+///     - Une ou plusieurs cartes avec : nom du client, heure, type d’intervention
+/// - Interaction :
+///     - Taper une date met en surbrillance et affiche les interventions de ce jour
+///     - Un bouton en bas "Voir planning complet" pour ouvrir la page du programme complet
+/// - Responsive : s'adapte à mobile et desktop
+
+// Exemple de base attendu :
+/// class UpcomingInterventionCalendarWidget extends StatefulWidget {
+///   final List<Intervention> upcomingList;
+///
+///   @override
+///   _UpcomingInterventionCalendarWidgetState createState() =>
+///       _UpcomingInterventionCalendarWidgetState();
+/// }
+///
+/// class _UpcomingInterventionCalendarWidgetState extends State<UpcomingInterventionCalendarWidget> {
+///   DateTime _selectedDate = DateTime.now();
+///
+///   @override
+///   Widget build(BuildContext context) {
+///     return GlassContainer(
+///       child: Column(
+///         children: [
+///           TableCalendar(
+///             firstDay: DateTime.now(),
+///             lastDay: DateTime.now().add(Duration(days: 60)),
+///             focusedDay: _selectedDate,
+///             calendarStyle: CalendarStyle(
+///               todayDecoration: BoxDecoration(color: Colors.cyanAccent, shape: BoxShape.circle),
+///             ),
+///             selectedDayPredicate: (day) => isSameDay(day, _selectedDate),
+///             onDaySelected: (selectedDay, focusedDay) {
+///               setState(() => _selectedDate = selectedDay);
+///             },
+///           ),
+///           ...widget.upcomingList
+///               .where((i) => isSameDay(i.date, _selectedDate))
+///               .map((i) => GlassCardWidget(intervention: i)),
+///           Align(
+///             alignment: Alignment.centerRight,
+///             child: TextButton(
+///               onPressed: () => Navigator.pushNamed(context, '/programme'),
+///               child: Text("Voir planning complet"),
+///             ),
+///           ),
+///         ],
+///       ),
+///     );
+///   }
+/// }
+Souhaites-tu maintenant le 9ᵉ prompt :
+🧪 Widget suivi des interventions en cours avec animation d’activité (progress) ?
+
+
+
+
+
+
+
+
+Vous avez dit :
+ok
+
+
+ChatGPT a dit :
+Voici le 9ᵉ prompt pour GitHub Copilot :
+
+🧪 9. PROMPT : Widget de suivi des interventions en cours avec animation de progression
+🎯 Objectif :
+Créer un widget qui affiche en temps réel ou à l'ouverture de l’application les interventions en cours, avec une animation visuelle de type progress bar circulaire ou linéaire selon leur avancement.
+
+✅ Prompt Copilot clair et complet :
+dart
+Copier
+Modifier
+// 🧪 Objectif : Créer un widget qui affiche les interventions en cours avec animation de progression
+// 🎯 But : Montrer dynamiquement l’état d’avancement d’une ou plusieurs interventions actives
+// 🎨 Style : Moderne, effet neon doux, progress bar circulaire pour chaque intervention
+// 📦 Packages recommandés : percent_indicator, flutter_animated_progress, flutter_neumorphic
+
+/// Le widget s'appelle `CurrentInterventionsProgressWidget`
+/// - Affiche une liste d’interventions en cours (en cours = status == "in_progress")
+/// - Pour chaque intervention :
+///     - Nom du client
+///     - Type d’intervention
+///     - Heure de début prévue
+///     - Barre de progression animée selon % d’avancement (ou temps écoulé depuis début)
+///     - Couleur verte/jaune/rouge selon niveau d’avancement
+/// - Responsive : s’adapte aux différents écrans
+/// - Peut être placé dans le dashboard ou appelé dans un drawer
+
+// Exemple de structure attendue :
+/// class CurrentInterventionsProgressWidget extends StatelessWidget {
+///   final List<Intervention> currentList;
+///
+///   @override
+///   Widget build(BuildContext context) {
+///     return Column(
+///       crossAxisAlignment: CrossAxisAlignment.start,
+///       children: [
+///         Text("🔧 Interventions en cours", style: Theme.of(context).textTheme.titleLarge),
+///         SizedBox(height: 12),
+///         ...currentList.map((i) => Padding(
+///           padding: const EdgeInsets.symmetric(vertical: 6),
+///           child: NeumorphicContainer(
+///             child: Row(
+///               children: [
+///                 Expanded(
+///                   child: Column(
+///                     crossAxisAlignment: CrossAxisAlignment.start,
+///                     children: [
+///                       Text("${i.clientName} - ${i.type}", style: TextStyle(fontWeight: FontWeight.bold)),
+///                       Text("Début : ${DateFormat('HH:mm').format(i.startTime)}"),
+///                     ],
+///                   ),
+///                 ),
+///                 CircularPercentIndicator(
+///                   radius: 40.0,
+///                   lineWidth: 5.0,
+///                   percent: i.progressPercent,
+///                   center: Text("${(i.progressPercent * 100).toInt()}%"),
+///                   progressColor: i.progressPercent < 0.5
+///                       ? Colors.redAccent
+///                       : i.progressPercent < 0.8
+///                           ? Colors.orangeAccent
+///                           : Colors.greenAccent,
+///                 ),
+///               ],
+///             ),
+///           ),
+///         )),
+///       ],
+///     );
+///   }
+/// }
